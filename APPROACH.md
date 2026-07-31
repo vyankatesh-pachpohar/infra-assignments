@@ -25,4 +25,4 @@ Secrets: K8s Secret (DB credentials)
 ## Known Limitations Given Time Scope
 - No HPA/autoscaling
 - No CI pipeline (bonus, time-permitting)
-- Single-node local cluster only
+- Single-node local cluster only.

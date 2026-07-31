@@ -55,3 +55,39 @@ Please spend **1–2 days** on this assignment. We value clear reasoning, repeat
 ## Questions
 
 If anything is unclear, feel free to reach out to your hiring contact.
+
+## Local Setup & Validation
+
+Prerequisites: Docker Desktop (with WSL2 integration if on Windows), kind, kubectl, Helm, Terraform, Go 1.26+.
+
+### Full bootstrap sequence
+\`\`\`bash
+make cluster-up        # create local kind cluster
+make infra-apply       # terraform init + apply (namespace, configmap, secret)
+make deploy             # build image, load into kind, helm install
+make migrate            # create the configs table in Postgres
+\`\`\`
+
+In a separate terminal:
+\`\`\`bash
+kubectl port-forward -n config-service svc/config-service-app 8080:8080
+\`\`\`
+
+Then, back in your first terminal:
+\`\`\`bash
+make validate            # runs /ping, POST /configs, GET /configs/:id smoke tests
+\`\`\`
+
+### Manual validation
+\`\`\`bash
+curl -i http://localhost:8080/ping
+curl -i -X POST http://localhost:8080/configs -H "Content-Type: application/json" \\
+  -d '{"id":"cfg_1","host":"localhost","port":8080,"app_name":"config-service","log_level":"INFO"}'
+curl -i http://localhost:8080/configs/cfg_1
+curl -i http://localhost:8080/configs/does_not_exist   # expect 404
+\`\`\`
+
+### Teardown
+\`\`\`bash
+make cluster-down
+\`\`\`

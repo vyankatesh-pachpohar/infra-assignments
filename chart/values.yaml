@@ -1,0 +1,10 @@
+namespace: config-service
+
+app:
+  image: config-service:local
+  replicas: 2
+  port: 8080
+
+postgres:
+  image: postgres:16-alpine
+  storageSize: 1Gi
